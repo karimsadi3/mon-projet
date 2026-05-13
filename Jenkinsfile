@@ -22,6 +22,6 @@ pipeline {
         }
        
     }
-     echo"hello "
+     
 }
 // karimooooo rtttzdzd
