@@ -20,7 +20,8 @@ pipeline {
                 echo 'Déploiement...'
             }
         }
-        echo("hello ")
+       
     }
+     echo"hello "
 }
 // karimooooo rtttzdzd
