@@ -32,28 +32,53 @@ class LivreController extends Controller
     }
 
     public function store(Request $request)
-    {
-        $request->validate([
-            'titre' => 'required|string|max:255',
-            'resume' => 'nullable|string',
-            'annee_publication' => 'required|integer',
-            'stock' => 'required|integer|min:0',
-            'auteur_id' => 'required|exists:auteurs,id',
-            'categorie_id' => 'required|exists:categories,id',
-            'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-        ]);
+            {
+                $request->validate([
+                    'titre' => 'required|string|max:255',
+                    'resume' => 'nullable|string',
+                    'annee_publication' => 'required|integer',
+                    'stock' => 'required|integer|min:0',
+                    'categorie_id' => 'required|exists:categories,id',
+                    'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+                ]);
 
-        $data = $request->all();
+                // ✅ Gestion nouvel auteur
+                if ($request->auteur_id === 'nouveau') {
 
-        if ($request->hasFile('image')) {
-            $data['image'] = $request->file('image')->store('livres', 'public');
-        }
+                    $request->validate([
+                        'nouveau_auteur_nom' => 'required|string|max:255',
+                        'nouveau_auteur_prenom' => 'required|string|max:255',
+                    ]);
 
-        Livre::create($data);
+                    $auteur = Auteur::create([
+                        'nom' => $request->nouveau_auteur_nom,
+                        'prenom' => $request->nouveau_auteur_prenom,
+                    ]);
 
-        return redirect()->route('livres.index')->with('success', 'Livre ajouté avec succès.');
-    }
+                    $auteur_id = $auteur->id;
 
+                } else {
+
+                    $request->validate([
+                        'auteur_id' => 'required|exists:auteurs,id',
+                    ]);
+
+                    $auteur_id = $request->auteur_id;
+                }
+
+                $data = $request->all();
+
+                // ✅ Remplace "nouveau" par le vrai ID
+                $data['auteur_id'] = $auteur_id;
+
+                if ($request->hasFile('image')) {
+                    $data['image'] = $request->file('image')->store('livres', 'public');
+                }
+
+                Livre::create($data);
+
+                return redirect()->route('livres.index')->with('success', 'Livre ajouté avec succès.');
+            }
     public function edit(Livre $livre)
     {
         $auteurs = Auteur::all();
@@ -123,13 +148,13 @@ class LivreController extends Controller
         $promptUser = $request->prompt;
 
         $livres = Livre::select('titre', 'resume')
-            ->limit(15)
+            ->limit(10)
             ->get();
 
         $catalogue = "";
 
         foreach ($livres as $livre) {
-            $resumeCourt = substr(strip_tags($livre->resume), 0, 120);
+            $resumeCourt = substr(strip_tags($livre->resume), 0, 40);
             $catalogue .= "
 Titre: {$livre->titre}
 Résumé: {$resumeCourt}
