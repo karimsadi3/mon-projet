@@ -41,7 +41,7 @@
                 cursor:pointer;
             "
         >
-            Supprimer mon compte
+            Supprimer mon compte.
         </button>
 
     </form>
