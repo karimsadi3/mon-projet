@@ -9,7 +9,9 @@ class IsAdmin
 {
     public function handle(Request $request, Closure $next)
     {
-        if ($request->user() && $request->user()->role === 'admin') {
+        if (
+            $request->user() &&
+            in_array($request->user()->role, ['admin', 'bibliothecaire'])) {
             return $next($request);
         }
 
