@@ -235,7 +235,7 @@
             </td>
 
             <td>
-                <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                <div style="display:flex;gap:10px;flex-wrap:nowrap; align-items:center; white-space:nowrap;">
 
                     {{-- ADMIN ACTIONS --}}
                     @if(auth()->check() && auth()->user()->role === 'admin')
